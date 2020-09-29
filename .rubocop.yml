@@ -1,0 +1,43 @@
+require:
+  - rubocop-performance
+
+AllCops:
+  NewCops: disable
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Style/SymbolArray:
+  Enabled: false
+
+Style/EmptyMethod:
+  Enabled: false
+
+Metrics/BlockLength:
+  Exclude:
+    - "test/**/*.rb"
+
+Metrics/ClassLength:
+  Exclude:
+    - "test/**/*.rb"
+
+Metrics/MethodLength:
+  Exclude:
+    - "test/**/*.rb"
+  Max: 15 # Default: 10
+
+Metrics/ModuleLength:
+  Exclude:
+    - "test/**/*.rb"
+
+Style/StructInheritance:
+  Enabled: false
