@@ -8,10 +8,15 @@ ruby "2.7.1"
 
 gem "csv"
 gem "terminal-table"
+gem "thor"
 
 group :development, :test do
   gem "byebug", platforms: [:mri, :mingw, :x64_mingw]
   gem "rubocop", require: false
   gem "rubocop-performance", require: false
   gem "ruby-debug-ide", require: false
+end
+
+group :test do
+  gem "minitest"
 end

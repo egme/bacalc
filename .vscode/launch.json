@@ -8,8 +8,15 @@
             "type": "Ruby",
             "request": "launch",
             "name": "Launch",
-            // "program": "${file}",
-            "program": "batting_averages.rb",
+            "program": "bacalc",
+            "args": [
+              "calculate",
+              "./data/Batting.csv",
+              "--year",
+              "2000",
+              // "--team",
+              // "Cincinnati Reds"
+            ],
             "cwd": "${workspaceRoot}"
         }
     ]

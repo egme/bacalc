@@ -1,0 +1,86 @@
+#!/usr/bin/env ruby
+
+require "thor"
+require "terminal-table"
+
+require "#{__dir__}/lib/csv_parser.rb"
+require "#{__dir__}/lib/processor.rb"
+
+class BattingAveragesCalculator < Thor
+  TEAMS_FILE = "#{__dir__}/data/Teams.csv".freeze
+
+  def self.exit_on_failure?
+    true
+  end
+
+  desc "calculate INPUT_FILE", "Calculates batting average stats for INPUT_FILE"
+  option :team, desc: "filter by specific team name"
+  option :year, desc: "filter by year"
+  long_desc <<-LONGDESC
+    Provided a CSV INPUT_FILE the program generates a report with all players with teams they
+    played during a season ordered by player's batting average.
+
+    INPUT_FILE should include at least the following columns:
+    \x5  - playerID
+    \x5  - yearID
+    \x5  - teamID (matched against internal teams database)
+    \x5  - AB (at bats)
+    \x5  - H (hits)
+
+    When the team is not found in internal database, it's name is replaced with "N/A" value.
+
+    The data can be optionally filtered by year and team name.
+  LONGDESC
+  def calculate(file)
+    stats = get_stats(
+      file: file,
+      year: options[:year],
+      team: options[:team]
+    )
+
+    table = Terminal::Table.new(
+      headings: ["Player ID", "Year", "Team name(s)", "Batting average"],
+      rows: stats.map(&:for_report)
+    )
+    table.align_column(3, :right)
+    puts table
+  end
+
+  desc "teams", "Prints the list of known teams"
+  def teams
+    teams_file = File.open(TEAMS_FILE, "r")
+    teams = Set.new
+
+    CsvParser.parse(
+      file: teams_file,
+      required_columns: ["name"]
+    ) do |entry|
+      teams << entry["name"]
+    end
+
+    teams_file.close
+
+    puts teams.to_a.sort.join("\n")
+  end
+
+  private
+
+  def get_stats(file:, year:, team:)
+    stats_file = File.open("#{Dir.pwd}/#{file}", "r")
+    teams_file = File.open(TEAMS_FILE, "r")
+
+    rows = Processor.new(
+      stats_file: stats_file,
+      teams_file: teams_file,
+      year_filter: year,
+      team_filter: team
+    ).sorted_stats
+
+    stats_file.close
+    teams_file.close
+
+    rows
+  end
+end
+
+BattingAveragesCalculator.start
